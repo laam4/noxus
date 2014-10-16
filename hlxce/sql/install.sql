@@ -4111,6 +4111,7 @@ CREATE TABLE IF NOT EXISTS `hlstats_Players` (
   `email` varchar(64) default NULL,
   `homepage` varchar(64) default NULL,
   `icq` int(10) unsigned default NULL,
+  `mmrank` tinyint(4) DEFAULT NULL,
   `game` varchar(32) NOT NULL,
   `hideranking` int(1) unsigned NOT NULL default '0',
   `headshots` int(10) unsigned NOT NULL default '0',
