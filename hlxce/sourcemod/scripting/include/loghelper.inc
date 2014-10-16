@@ -1,4 +1,4 @@
-#define LOGHELPER_VERSION 3
+#define LOGHELPER_VERSION 4
 
 #include <sourcemod>
 #include <sdktools>
@@ -129,6 +129,30 @@ stock LogKill(attacker, victim, const String:weapon[], bool:display_location = f
 	}
 }
 
+stock LogSuicide(victim, const String:weapon[], bool:display_location = false, const String:properties[] = "")
+{
+	if (IsValidPlayer(victim))
+	{
+		decl String:victim_authid[32];
+		if (!GetClientAuthString(victim, victim_authid, sizeof(victim_authid)))
+		{
+			strcopy(victim_authid, sizeof(victim_authid), "UNKNOWN");
+		}
+			
+		if (display_location)
+		{
+			decl Float:victim_origin[3];
+			GetClientAbsOrigin(victim, victim_origin);
+			
+			LogToGame("\"%N<%d><%s><%s>\" committed suicide with \"%s\"%s (victim_position \"%d %d %d\")", victim, GetClientUserId(victim), victim_authid, g_team_list[GetClientTeam(victim)], weapon, properties, RoundFloat(victim_origin[0]), RoundFloat(victim_origin[1]), RoundFloat(victim_origin[2])); 
+		}
+		else
+		{
+			LogToGame("\"%N<%d><%s><%s>\" committed suicide with \"%s\"%s", victim, GetClientUserId(victim), victim_authid, g_team_list[GetClientTeam(victim)], weapon, properties); 
+		}
+	}
+}
+
 // For Psychostats "KTRAJ" kill trajectory log lines
 stock LogPSKillTraj(attacker, victim, const String:weapon[])
 {
@@ -176,9 +200,32 @@ stock LogKillLoc(attacker, victim)
 	}
 }
 
+stock LogTeamChange(client, newteam, const String:properties[] = "")
+{
+	if (IsValidPlayer(client))
+	{
+		decl String:player_authid[32];
+		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		{
+			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
+		}
+		
+		LogToGame("\"%N<%d><%s><%s>\" joined team \"%s\"%s", client, GetClientUserId(client), player_authid, g_team_list[GetClientTeam(client)], g_team_list[newteam], properties);
+	}
+}
+
 stock LogRoleChange(client, const String:role[], const String:properties[] = "")
 {
-	LogPlayerEvent( client, "changed role to", role, false, properties );
+	if (IsValidPlayer(client))
+	{
+		decl String:player_authid[32];
+		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		{
+			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
+		}
+		
+		LogToGame("\"%N<%d><%s><%s>\" changed role to \"%s\"%s", client, GetClientUserId(client), player_authid, g_team_list[GetClientTeam(client)], role, properties);
+	}
 }
 
 stock LogMapLoad()

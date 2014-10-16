@@ -24,44 +24,57 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define NAME "SuperLogs: CSS"
-#define VERSION "1.2.4"
+#define NAME "SuperLogs: CS:GO"
+#define VERSION "1.2.6"
 
-#define MAX_LOG_WEAPONS 28
-#define IGNORE_SHOTS_START 25
-#define MAX_WEAPON_LEN 13
+#define MAX_LOG_WEAPONS 41
+#define IGNORE_SHOTS_START 35
+#define MAX_WEAPON_LEN 17
 
 
 new g_weapon_stats[MAXPLAYERS+1][MAX_LOG_WEAPONS][15];
 new const String:g_weapon_list[MAX_LOG_WEAPONS][MAX_WEAPON_LEN] = {
 									"ak47", 
-									"m4a1",
+									"aug",
 									"awp", 
+									"bizon",
 									"deagle",
-									"mp5navy",
-									"aug", 
-									"p90",
-									"famas",
-									"galil",
-									"scout",
-									"g3sg1",
-									"usp",
-									"glock",
-									"m249",
-									"m3",
 									"elite",
+									"famas",
 									"fiveseven",
+									"g3sg1",
+									"galilar",
+									"glock",
+									"hpk2000",
+									"usp_silencer",
+									"usp_silencer_off",
+									"m249",
+									"m4a1",
+									"m4a1_silencer",
+									"m4a1_silencer_off",
 									"mac10",
-									"p228",
-									"sg550",
-									"sg552",
-									"tmp",
+									"mag7",
+									"mp7",
+									"mp9",
+									"negev",
+									"nova",
+									"p250",
+									"cz75a",
+									"p90",
+									"sawedoff",
+									"scar20",
+									"sg556",
+									"ssg08",
+									"taser",
+									"tec9",
 									"ump45",
 									"xm1014",
-									"knife",
+									"incgrenade",
 									"hegrenade",
+									"molotov",
+									"flashbang",
 									"smokegrenade",
-									"flashbang"
+									"decoy" 
 								};
 
 new Handle:g_cvar_wstats = INVALID_HANDLE;
@@ -70,6 +83,7 @@ new Handle:g_cvar_actions = INVALID_HANDLE;
 new Handle:g_cvar_locations = INVALID_HANDLE;
 new Handle:g_cvar_ktraj = INVALID_HANDLE;
 new Handle:g_cvar_version = INVALID_HANDLE;
+new EngineVersion:CurrentVersion;
 
 new bool:g_logwstats = true;
 new bool:g_logheadshots = true;
@@ -84,38 +98,20 @@ new bool:g_logktraj = false;
 public Plugin:myinfo = {
 	name = NAME,
 	author = "psychonic",
-	description = "Advanced logging for CSS. Generates auxilary logging for use with log parsers such as HLstatsX and Psychostats",
+	description = "Advanced logging for CS:GO. Generates auxilary logging for use with log parsers such as HLstatsX and Psychostats",
 	version = VERSION,
 	url = "http://www.hlxcommunity.com"
 };
 
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 3
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-#else
-public bool:AskPluginLoad(Handle:myself, bool:late, String:error[], err_max)
-#endif
 {
-	decl String:game_description[64];
-	GetGameDescription(game_description, sizeof(game_description), true);
-	if (StrContains(game_description, "Counter-Strike", false) == -1)
+	CurrentVersion = GetEngineVersion();
+	if (CurrentVersion != Engine_CSGO)
 	{
-		decl String:game_folder[64];
-		GetGameFolderName(game_folder, sizeof(game_folder));
-		if (StrContains(game_folder, "cstrike", false) == -1)
-		{
-			strcopy(error, err_max, "This plugin is only supported on CS:S");
-			#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 3
-				return APLRes_Failure;
-			#else
-				return false;
-			#endif
-		}
+		strcopy(error, err_max, "This plugin is only supported on CS:GO");
+		return APLRes_Failure;
 	}
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 3
 	return APLRes_Success;
-#else
-	return true;
-#endif
 }
 
 
