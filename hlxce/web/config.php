@@ -45,13 +45,13 @@ if ( !defined('IN_HLSTATS') ) { die('Do not access this file directly'); }
 define("DB_ADDR", "localhost");
 
 // DB_USER - The username to connect to the database as
-define("DB_USER", "");
+define("DB_USER", "hlxuser");
 
 // DB_PASS - The password for DB_USER
-define("DB_PASS", "");
+define("DB_PASS", "OfH&(Psbb*0c");
 
 // DB_NAME - The name of the database
-define("DB_NAME", "");
+define("DB_NAME", "hlstatsx");
 
 // DB_TYPE - The database server type. Only "mysql" is supported currently
 define("DB_TYPE", "mysql");

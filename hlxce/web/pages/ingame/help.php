@@ -42,6 +42,101 @@ For support and installation notes visit http://www.hlxcommunity.com
 		$server_id = valid_request($_GET['server_id'], 1);
 ?>
 	<strong>&nbsp;<a href="http://www.hlxcommunity.com">HLstatsX Community Edition</a> <?php echo $g_options['version']; ?></strong><br /><br />
+
+	<H1>Sourcemod Commands</H1>
+        <table style="width:100%;border:0;padding:1px;border-spacing:0;">
+                <tr class="data-table-head">
+                        <td class="fSmall data-table" colspan="3">&nbsp;Chat commands, command prefix ! or /</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">ff</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Shows friendly fire status</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">nextmap</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Shows nextmap</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">/report</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Report player to admins</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">nominate</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Opens map nominate menu</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">rtv</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Try to rock the vote, remember to nominate your map beforehand</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!sprays</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Opens a menu to choose your spray</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!knife</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Shows available knife commands: "Type !bayonet !gut !flip !m9 !karambit !huntsman !butterfly !default"</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!bayonet</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a bayonet knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!gut</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a gut knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!flip</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a flip knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!m9</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a m9bayonet knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!karambit</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a karambit knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!huntsman</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a huntsman knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!butterfly</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives you a butterfly knife</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!default</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Gives back your default knife</td>
+                </tr>
+		<tr class="data-table-head">
+                        <td class="fSmall data-table" colspan="3">&nbsp;Bindable commands</td>
+		</tr>
+                <tr class="bg1">
+                        <td class="fNormal">sm_spray</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Bind this command to button which you want to use as your spray button, for example type: bind t sm_spray</td>
+                </tr>
+
+
+	</table>
+
+
+	<H1>HLstatsX commands</H1>
 	<table style="width:100%;border:0;padding:1px;border-spacing:0;">
 		<tr class="data-table-head">
 			<td class="fSmall data-table" colspan="3">&nbsp;Commands display the results ingame</td>

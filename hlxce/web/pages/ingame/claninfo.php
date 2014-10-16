@@ -180,8 +180,13 @@ if ( !defined('IN_HLSTATS') ) { die('Do not access this file directly.'); }
 			new TableColumn(
 				'lastName',
 				'Name',
-				'width=32&flag=1&link=' . urlencode('mode=statsme&amp;player=%k')
+				'width=28&flag=1&link=' . urlencode('mode=statsme&amp;player=%k')
 			),
+                        new TableColumn(
+                                'mmrank',
+                                'Rank',
+                                'width=4&mmrank=1&type=wtf'
+                        ),
 			new TableColumn(
 				'skill',
 				'Points',
@@ -241,6 +246,7 @@ if ( !defined('IN_HLSTATS') ) { die('Do not access this file directly.'); }
 			country,
 			flag,
 			skill,
+			mmrank,
 			connection_time,
 			kills,
 			deaths,

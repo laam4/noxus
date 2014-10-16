@@ -58,9 +58,10 @@ $lastpage = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:"";
 </head>
 <body style="margin:0px;padding:0px;" id="ingame"> 
     
-<div style="width:100%;height:50px;" class="headerblock">
+<div style="width:100%;height:60px;" class="headerblock">
 	<img src="<?php echo IMAGE_PATH; ?>/icons/title.png" alt="HLstats" />
-	<?php 
+	<a href="http://www.steamcommunity.com/groups/noxuscs" target="_blank"><img src="<?php echo IMAGE_PATH; ?>/NoxusLogo.png" align="right" alt="Noxus" /></a>
+        <?php
 	if ($lastpage) {
 		?>
 		<div style="position: absolute; bottom:45%; right:0; color #FFFFFF;">

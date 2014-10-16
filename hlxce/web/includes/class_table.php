@@ -302,6 +302,12 @@ class Table
 				
 				switch ($col->type)
 				{
+					case 'elorank':
+	                                        if ($colval == '') {
+        	                                      $colval = '0';
+                	                        }
+						$cellbody = '<img src="' . IMAGE_PATH  . "/mmranks/" . $colval . ".png\" class=\"tableicon\" alt=\"elorank\" style=\"height:20px;width:50px;\" />";
+						break;
 					case 'timestamp':
 						$cellbody  = timestamp_to_str($colval);
 						break;           
@@ -346,29 +352,7 @@ class Table
 						break;
 
 					case 'bargraph':
-						$cellbody .= '<img src="' . IMAGE_PATH . '/bar';
-						if ($colval > 40)
-							$cellbody .= '6';
-						elseif ($colval > 30)
-							$cellbody .= '5';
-						elseif ($colval > 20)
-							$cellbody .= '4';
-						elseif ($colval > 10)
-							$cellbody .= '3';
-						elseif ($colval > 5)
-							$cellbody .= '2';
-						else
-							$cellbody .= '1';
-
-						$cellbody .= '.gif" style="width:';
-						if ($colval < 1)
-							$cellbody .= '1';
-						elseif ($colval > 100)
-							$cellbody .= '100';
-						else
-							$cellbody .= sprintf("%d", $colval + 0.5);
-
-						$cellbody .= "%;\" class=\"bargraph\" alt=\"$colval%\" />";
+						$cellbody .= '<meter min="0" max="100" low="25" high="50" optimum="75" value="'.$colval.'"></meter>';
 						break;
 					case 'heatmap':
 						$heatmap = getImage("/games/$game/heatmaps/$colval-kill");
@@ -520,6 +504,7 @@ class TableColumn
 	var $align = 'left';
 	var $width = 20;
 	var $icon;
+	var $mmrank;
 	var $link;
 	var $sort = 'yes';
 	var $type = 'text';
@@ -535,6 +520,7 @@ class TableColumn
 			'align',
 			'width',
 			'icon',
+			'mmrank',
 			'link',
 			'sort',
 			'append',

@@ -207,6 +207,19 @@ For support and installation notes visit http://www.hlxcommunity.com
 					</td>
 				</tr>
 				<tr class="bg2">
+                                        <td>MM Rank:</td>
+                                        <td>
+                                                <?php
+                                                        if ($playerdata['mmrank'])
+                                                        {
+                                                                echo '<img src=hlstatsimg/mmranks/' . $playerdata['mmrank'] . '.png alt="rank" style=\"height:20px;width:50px; />';
+                                                        }
+                                                        else
+								echo '<img src=hlstatsimg/mmranks/0.png alt="rank" style=\"height:20px;width:50px; />';
+                                                ?>
+                                        </td>
+                                </tr>
+				<tr class="bg1">
 					<td>Last Connect:*</td>
 					<td>
 						<?php
@@ -231,13 +244,13 @@ For support and installation notes visit http://www.hlxcommunity.com
 						?>
 					</td>
 				</tr>
-				<tr class="bg1">
+				<tr class="bg2">
 					<td>Total Connection Time:</td>
 					<td>
 						<?php echo timestamp_to_str($playerdata['connection_time']); ?>
 					</td>
 				</tr>
-				<tr class="bg2">
+				<tr class="bg1">
 					<td>Average Ping:*</td>
 					<td>
 						<?php
@@ -259,7 +272,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 						?>
 					</td>
 				</tr>
-				<tr class="bg1">
+				<tr class="bg2">
 					<td>Favorite Server:*</td>
 					<td>
 						<?php
@@ -290,7 +303,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 						?>
 					</td>
 				</tr>
-				<tr class="bg2">
+				<tr class="bg1">
 					<td>Favorite Map:*</td>
 					<td>
 						<?php
@@ -315,7 +328,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 						?>
 					</td>
 				</tr>
-				<tr class="bg1">
+				<tr class="bg2">
 					<td>Favorite Weapon:*</td>
 						<?php
 							$result = $db->query("
@@ -373,21 +386,8 @@ For support and installation notes visit http://www.hlxcommunity.com
 				<tr class="bg1">
 					<td style="width:50%;">Activity:</td>
 					<td style="width:35%;">
-						<?php
-							$width = sprintf("%d%%", $playerdata['activity'] + 0.5);
-							$bar_type = 1;
-							if ($playerdata['activity'] > 40)
-								$bar_type = "6";
-							elseif ($playerdata['activity'] > 30)
-								$bar_type = "5";
-							elseif ($playerdata['activity'] > 20)
-								$bar_type = "4";
-							elseif ($playerdata['activity'] > 10)
-								$bar_type = "3";
-							elseif ($playerdata['activity'] > 5)
-								$bar_type = "2";
-							echo "<img src=\"" . IMAGE_PATH . "/bar$bar_type.gif\" style=\"width:$width;height:10px;border:0;\" alt=\"".$playerdata['activity'].'%" />';
-						?>
+	                                <meter min="0" max="100" low="25" high="50" optimum="75" value="<?php
+                                        echo $playerdata['activity'] ?>"></meter>
 					</td>
 					<td style="width:15%;"><?php echo $playerdata['activity'].'%'; ?></td>
 				</tr>

@@ -9,7 +9,7 @@ BODY {font: 10pt Arial; }
 
 TD {font: 11pt Arial; } 
 h2 {font: 11px Arial; } 
-h1 {font: 11px Arial; } 
+h1 {font: 20px Arial; } 
 h3 {font: 11px Arial; }
 
 .helpwindow {
@@ -67,6 +67,55 @@ ul#header_gameslist li{
 	font-size: 14px;
 }
 
+meter {
+    /* Reset the default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* For Firefox */
+    background: #EEE;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2) inset;
+    border-radius: 3px;
+    width: 100%;
+    height: 12px;	
+}
+
+meter::-webkit-meter-bar {
+    background: #EEE;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2) inset;
+    border-radius: 3px;
+}
+
+meter::-webkit-meter-optimum-value {
+    background: #86CC00; /* Green */
+    border-radius: 3px;
+}
+
+meter::-webkit-meter-suboptimum-value {
+    background: #FFDB1A; /* Yellow */
+    border-radius: 3px;
+}
+
+meter::-webkit-meter-even-less-good-value {
+    background: #CC4600; /* Red */
+    border-radius: 3px;
+}
+
+meter::-moz-meter-bar {
+    border-radius: 3px;
+}
+
+meter:-moz-meter-optimum::-moz-meter-bar {
+    background: #86CC00;
+}
+
+meter:-moz-meter-sub-optimum::-moz-meter-bar {
+    background: #FFDB1A;
+}
+
+meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+    background: #CC4600;
+}
 
 .warning {
 	border: thin solid red;

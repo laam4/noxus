@@ -66,7 +66,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 	if ((isset($_GET['players'])) && (is_numeric($_GET['players'])))
 		$players = valid_request($_GET['players'], 1);
   
-	$clans = 3;  
+	$clans = 10;  
 	if ((isset($_GET['clans'])) && (is_numeric($_GET['clans'])))
 		$clans = valid_request($_GET['clans'], 1);
   
@@ -83,8 +83,13 @@ For support and installation notes visit http://www.hlxcommunity.com
 				new TableColumn(
 					'lastName',
 					'Playername',
-					'width=50&flag=1&link=' . urlencode('mode=statsme&amp;player=%k')
+					'width=46&flag=1&link=' . urlencode('mode=statsme&amp;player=%k')
 				),
+                                new TableColumn(
+                                        'mmrank',
+                                        'Rank',
+                                        'width=4&type=elorank'
+                                ),
 				new TableColumn(
 					'skill',
 					'Points',
@@ -121,6 +126,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 				skill,
 				flag,
 				country,
+				mmrank,
 				IFNULL(kills/deaths, '-') AS kpd,
 				IFNULL(headshots/kills, '-') AS hpk,
 				activity
@@ -138,7 +144,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 	}
   
 	//
-	// Top 3 Clans
+	// Top 10 Clans
 	//
 	if($clans > 0) {
 		$table_clans = new Table(
@@ -168,7 +174,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 			'skill',
 			'kpd',
 			true,
-			3
+			10
 		);
 	  
 		$result_clans = $db->query("
@@ -197,7 +203,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 				$table_clans->sort $table_clans->sortorder
 			LIMIT 0,$clans
 		");
-		$table_clans->draw($result_clans, 3, 100);
+		$table_clans->draw($result_clans, 10, 100);
 	}
   
 	//
