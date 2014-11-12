@@ -2171,9 +2171,7 @@ sub doEvent_Chat
 			} elsif ($set_field eq "icq" || $set_field eq "uin") {
 				&updatePlayerProfile($player, "icq", $set_value);
 			} elsif ($set_field eq "rank" || $set_field eq "mmrank") {
-				if (0 =< $set_value =< 18) {
-					&updatePlayerProfile($player, "mmrank", $set_value);
-				}
+				&updatePlayerProfile($player, "mmrank", $set_value);
 			} elsif ($set_field eq "geo") {
 				# string parsen aus $set_value
 				my $flag = substr($set_value,0,2);
