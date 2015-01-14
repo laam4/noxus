@@ -48,7 +48,6 @@ new const String: blocked_commands[][] = { "rank", "skill", "points", "place", "
 	
 new Handle:HLstatsXMenuMain;
 new Handle:HLstatsXMenuAuto;
-new Handle:HLstatsXMenuElo;
 new Handle:HLstatsXMenuEvents;
 
 new Handle: PlayerColorArray;
@@ -91,7 +90,6 @@ public OnPluginStart()
 
 	CreateHLstatsXMenuMain(HLstatsXMenuMain);
 	CreateHLstatsXMenuAuto(HLstatsXMenuAuto);
-	CreateHLstatsXMenuElo(HLstatsXMenuElo);
 	CreateHLstatsXMenuEvents(HLstatsXMenuEvents);
 
 	RegServerCmd("hlx_sm_psay",          hlx_sm_psay);
@@ -107,7 +105,6 @@ public OnPluginStart()
 	RegServerCmd("hlx_sm_player_action", hlx_sm_player_action);
 	RegServerCmd("hlx_sm_team_action",   hlx_sm_team_action);
 	RegServerCmd("hlx_sm_world_action",  hlx_sm_world_action);
-	RegConsoleCmd("sm_mm",				 Elorankmenu);
 	
 	AddCommandListener(hlx_block_commands, "say");
 	AddCommandListener(hlx_block_commands, "say_team");
@@ -297,11 +294,6 @@ public OnProtectAddressChange(Handle:cvar, const String:oldVal[], const String:n
 		LogToGame("Command: %s", log_command);
 		ServerCommand(log_command);
 	}
-}
-
-public Action:Elorankmenu(client, args)
-{
-	DisplayMenu(HLstatsXMenuElo, client, MENU_TIME_FOREVER);
 }
 
 public Action:ProtectLoggingChange(args)
@@ -1296,35 +1288,6 @@ public CreateHLstatsXMenuAuto(&Handle: MenuHandle)
 	SetMenuPagination(MenuHandle, 8);
 }
 
-public CreateHLstatsXMenuElo(&Handle: MenuHandle)
-{
-	MenuHandle = CreateMenu(HLstatsXEloCommandHandler, MenuAction_Select|MenuAction_Cancel);
-
-	SetMenuTitle(MenuHandle, "HLstatsX - Your MM rank?");
-	AddMenuItem(MenuHandle, "", "No Rank");
-	AddMenuItem(MenuHandle, "", "Silver I");
-	AddMenuItem(MenuHandle, "", "Silver II");
-	AddMenuItem(MenuHandle, "", "Silver III");
-	AddMenuItem(MenuHandle, "", "Silver IV");
-	AddMenuItem(MenuHandle, "", "Silver Elite");
-	AddMenuItem(MenuHandle, "", "Silver Elite Master");
-	AddMenuItem(MenuHandle, "", "Gold Nova I");
-	AddMenuItem(MenuHandle, "", "Gold Nova II");
-	AddMenuItem(MenuHandle, "", "Gold Nova III");
-	AddMenuItem(MenuHandle, "", "Gold Nova Master");
-	AddMenuItem(MenuHandle, "", "Master Guardian I");
-	AddMenuItem(MenuHandle, "", "Master Guardian II");
-	AddMenuItem(MenuHandle, "", "Master Guardian Elite");
-	AddMenuItem(MenuHandle, "", "Distinguished Master Guardian");
-	AddMenuItem(MenuHandle, "", "Legendary Eagle");
-	AddMenuItem(MenuHandle, "", "Legandary Eagle Master");
-	AddMenuItem(MenuHandle, "", "Supreme Master First Class");
-	AddMenuItem(MenuHandle, "", "The Global Elite");
-
-	SetMenuPagination(MenuHandle, 8);
-}
-
-
 public CreateHLstatsXMenuEvents(&Handle: MenuHandle)
 {
 	MenuHandle = CreateMenu(HLstatsXEventsCommandHandler, MenuAction_Select|MenuAction_Cancel);
@@ -1358,16 +1321,14 @@ public HLstatsXMainCommandHandler(Handle:menu, MenuAction:action, param1, param2
 				case 0 : 
 					make_player_command(param1, "/rank");
 				case 1 : 
-					DisplayMenu(HLstatsXMenuElo, param1, MENU_TIME_FOREVER);
-				case 2 : 
 					make_player_command(param1, "/next");
-				case 3 : 
+				case 2 : 
 					make_player_command(param1, "/top10");
-				case 4 : 
+				case 3 : 
 					DisplayMenu(HLstatsXMenuAuto, param1, MENU_TIME_FOREVER);
-				case 5 : 
+				case 4 : 
 					DisplayMenu(HLstatsXMenuEvents, param1, MENU_TIME_FOREVER);
-				case 6 : 
+				case 5 : 
 					make_player_command(param1, "/hlx_hideranking");
 				}
 			}
@@ -1378,34 +1339,32 @@ public HLstatsXMainCommandHandler(Handle:menu, MenuAction:action, param1, param2
 				case 0 : 
 					make_player_command(param1, "/rank");
 				case 1 : 
-					DisplayMenu(HLstatsXMenuElo, param1, MENU_TIME_FOREVER);
-				case 2 : 
 					make_player_command(param1, "/next");
-				case 3 : 
+				case 2 : 
 					make_player_command(param1, "/top10");
-				case 4 : 
+				case 3 : 
 					make_player_command(param1, "/clans");
-				case 5 : 
+				case 4 : 
 					make_player_command(param1, "/status");
-				case 6 : 
+				case 5 : 
 					make_player_command(param1, "/statsme");
-				case 7 : 
+				case 6 : 
 					DisplayMenu(HLstatsXMenuAuto, param1, MENU_TIME_FOREVER);
-				case 8 : 
+				case 7 : 
 					DisplayMenu(HLstatsXMenuEvents, param1, MENU_TIME_FOREVER);
-				case 9 : 
+				case 8 : 
 					make_player_command(param1, "/weapons");
-				case 10 : 
+				case 9 : 
 					make_player_command(param1, "/accuracy");
-				case 11 : 
+				case 10 : 
 					make_player_command(param1, "/targets");
-				case 12 : 
+				case 11 : 
 					make_player_command(param1, "/kills");
-				case 13 : 
+				case 12 : 
 					make_player_command(param1, "/hlx_hideranking");
-				case 14 : 
+				case 13 : 
 					make_player_command(param1, "/bans");
-				case 15 : 
+				case 14 : 
 					make_player_command(param1, "/help");
 				}
 			}
@@ -1430,57 +1389,6 @@ public HLstatsXAutoCommandHandler(Handle:menu, MenuAction:action, param1, param2
 				make_player_command(param1, "/hlx_auto kill rank");
 			case 3 : 
 				make_player_command(param1, "/hlx_auto clear");
-			}
-		}
-	}
-}
-
-public HLstatsXEloCommandHandler(Handle:menu, MenuAction:action, param1, param2)
-{
-	if (action == MenuAction_Select)
-	{
-		if (IsClientInGame(param1))
-		{
-			switch (param2)
-			{
-			case 0 : 
-				make_player_command(param1, "/hlx_set rank 0");
-			case 1 : 
-				make_player_command(param1, "/hlx_set rank 1");
-			case 2 : 
-				make_player_command(param1, "/hlx_set rank 2");
-			case 3 : 
-				make_player_command(param1, "/hlx_set rank 3");
-			case 4 : 
-				make_player_command(param1, "/hlx_set rank 4");
-			case 5 : 
-				make_player_command(param1, "/hlx_set rank 5");
-			case 6 : 
-				make_player_command(param1, "/hlx_set rank 6");
-			case 7 : 
-				make_player_command(param1, "/hlx_set rank 7");
-			case 8 : 
-				make_player_command(param1, "/hlx_set rank 8");
-			case 9 : 
-				make_player_command(param1, "/hlx_set rank 9");
-			case 10 : 
-				make_player_command(param1, "/hlx_set rank 10");
-			case 11 : 
-				make_player_command(param1, "/hlx_set rank 11");
-			case 12 : 
-				make_player_command(param1, "/hlx_set rank 12");
-			case 13 : 
-				make_player_command(param1, "/hlx_set rank 13");
-			case 14 : 
-				make_player_command(param1, "/hlx_set rank 14");
-			case 15 : 
-				make_player_command(param1, "/hlx_set rank 15");
-			case 16 : 
-				make_player_command(param1, "/hlx_set rank 16");
-			case 17 : 
-				make_player_command(param1, "/hlx_set rank 17");
-			case 18 : 
-				make_player_command(param1, "/hlx_set rank 18");				
 			}
 		}
 	}
