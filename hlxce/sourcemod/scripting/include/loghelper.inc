@@ -48,7 +48,7 @@ stock LogPlayerEvent(client, const String:verb[], const String:event[], bool:dis
 	if (IsValidPlayer(client))
 	{
 		decl String:player_authid[32];
-		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		if (!GetClientAuthId(client, AuthId_Steam2, player_authid, sizeof(player_authid)))
 		{
 			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
 		}
@@ -71,12 +71,12 @@ stock LogPlyrPlyrEvent(client, victim, const String:verb[], const String:event[]
 	if (IsValidPlayer(client) && IsValidPlayer(victim))
 	{
 		decl String:player_authid[32];
-		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		if (!GetClientAuthId(client, AuthId_Steam2, player_authid, sizeof(player_authid)))
 		{
 			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
 		}
 		decl String:victim_authid[32];
-		if (!GetClientAuthString(victim, victim_authid, sizeof(victim_authid)))
+		if (!GetClientAuthId(victim, AuthId_Steam2, victim_authid, sizeof(victim_authid)))
 		{
 			strcopy(victim_authid, sizeof(victim_authid), "UNKNOWN");
 		}
@@ -103,12 +103,12 @@ stock LogKill(attacker, victim, const String:weapon[], bool:display_location = f
 	if (IsValidPlayer(attacker) && IsValidPlayer(victim))
 	{
 		decl String:attacker_authid[32];
-		if (!GetClientAuthString(attacker, attacker_authid, sizeof(attacker_authid)))
+		if (!GetClientAuthId(attacker, AuthId_Steam2, attacker_authid, sizeof(attacker_authid)))
 		{
 			strcopy(attacker_authid, sizeof(attacker_authid), "UNKNOWN");
 		}
 		decl String:victim_authid[32];
-		if (!GetClientAuthString(victim, victim_authid, sizeof(victim_authid)))
+		if (!GetClientAuthId(victim, AuthId_Steam2, victim_authid, sizeof(victim_authid)))
 		{
 			strcopy(victim_authid, sizeof(victim_authid), "UNKNOWN");
 		}
@@ -134,7 +134,7 @@ stock LogSuicide(victim, const String:weapon[], bool:display_location = false, c
 	if (IsValidPlayer(victim))
 	{
 		decl String:victim_authid[32];
-		if (!GetClientAuthString(victim, victim_authid, sizeof(victim_authid)))
+		if (!GetClientAuthId(victim, AuthId_Steam2, victim_authid, sizeof(victim_authid)))
 		{
 			strcopy(victim_authid, sizeof(victim_authid), "UNKNOWN");
 		}
@@ -159,12 +159,12 @@ stock LogPSKillTraj(attacker, victim, const String:weapon[])
 	if (IsValidPlayer(attacker) && IsValidPlayer(victim))
 	{
 		decl String:attacker_authid[32];
-		if (!GetClientAuthString(attacker, attacker_authid, sizeof(attacker_authid)))
+		if (!GetClientAuthId(attacker, AuthId_Steam2, attacker_authid, sizeof(attacker_authid)))
 		{
 			strcopy(attacker_authid, sizeof(attacker_authid), "UNKNOWN");
 		}
 		decl String:victim_authid[32];
-		if (!GetClientAuthString(victim, victim_authid, sizeof(victim_authid)))
+		if (!GetClientAuthId(victim, AuthId_Steam2, victim_authid, sizeof(victim_authid)))
 		{
 			strcopy(victim_authid, sizeof(victim_authid), "UNKNOWN");
 		}
@@ -205,7 +205,7 @@ stock LogTeamChange(client, newteam, const String:properties[] = "")
 	if (IsValidPlayer(client))
 	{
 		decl String:player_authid[32];
-		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		if (!GetClientAuthId(client, AuthId_Steam2, player_authid, sizeof(player_authid)))
 		{
 			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
 		}
@@ -219,7 +219,7 @@ stock LogRoleChange(client, const String:role[], const String:properties[] = "")
 	if (IsValidPlayer(client))
 	{
 		decl String:player_authid[32];
-		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		if (!GetClientAuthId(client, AuthId_Steam2, player_authid, sizeof(player_authid)))
 		{
 			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
 		}

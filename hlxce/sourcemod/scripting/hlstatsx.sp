@@ -730,13 +730,13 @@ public Action:hlx_sm_psay2(args)
 	new j = 0;
 	for (new i = 0; i < sizeof(client_message); i++)
 	{
-		new char = client_message[i];
-		if (char < 5 && char > 0)
+		new character = client_message[i];
+		if (character < 5 && character > 0)
 		{
 			continue;
 		}
 		buffer_message[j] = client_message[i];
-		if (char == 0)
+		if (character == 0)
 		{
 			break;
 		}
@@ -1531,7 +1531,7 @@ stock LogPlayerEvent(client, const String:verb[], const String:event[], bool:dis
 	if (IsValidPlayer(client))
 	{
 		decl String:player_authid[32];
-		if (!GetClientAuthString(client, player_authid, sizeof(player_authid)))
+		if (!GetClientAuthId(client, AuthId_Steam2, player_authid, sizeof(player_authid)))
 		{
 			strcopy(player_authid, sizeof(player_authid), "UNKNOWN");
 		}
