@@ -47,13 +47,17 @@ if ( !defined('IN_HLSTATS') ) { die('Do not access this file directly.'); }
 Header ('Cache-Control: no-cache');
 $lastpage = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:"";
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="hlstats.css">
 	<link rel="stylesheet" type="text/css" href="styles/<?php echo $g_options['style']; ?>">
+	<script type="text/javascript" src="<?php echo INCLUDE_PATH; ?>/js/mootools.js"></script>
+	<script type="text/javascript" src="<?php echo INCLUDE_PATH; ?>/js/SqueezeBox.js"></script>
+	<script type="text/javascript" src="<?php echo INCLUDE_PATH; ?>/js/heatmap.js"></script>
+	<script type="text/javascript" src="<?php echo INCLUDE_PATH; ?>/js/tabs.js"></script>
 	<title>HLstatsX</title>
 </head>
 <body style="margin:0px;padding:0px;" id="ingame"> 

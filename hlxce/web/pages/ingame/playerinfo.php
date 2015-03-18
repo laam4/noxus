@@ -224,6 +224,17 @@ For support and installation notes visit http://www.hlxcommunity.com
 		}
 		exit;
 	}
+	pageHeader
+	(
+		array ($gamename, 'Player Details', $pl_name),
+		array
+		(
+			$gamename=>$g_options['scripturl'] . "?game=$game",
+			'Player Rankings'=>$g_options['scripturl'] . "?mode=players&game=$game",
+			'Player Details'=>""
+		),
+		$pl_name
+	);
 ?>
 <div class="block" id="main">
 <?php	

@@ -41,7 +41,6 @@ For support and installation notes visit http://www.hlxcommunity.com
 	if ((isset($_GET['server_id'])) && (is_numeric($_GET['server_id'])))
 		$server_id = valid_request($_GET['server_id'], 1);
 ?>
-	<strong>&nbsp;<a href="http://www.hlxcommunity.com">HLstatsX Community Edition</a> <?php echo $g_options['version']; ?></strong><br /><br />
 
 	<H1>Sourcemod Commands</H1>
         <table style="width:100%;border:0;padding:1px;border-spacing:0;">
@@ -77,6 +76,26 @@ For support and installation notes visit http://www.hlxcommunity.com
                         <td class="fNormal">!sprays</td>
                         <td class="fNormal">=</td>
                         <td class="fNormal">Opens a menu to choose your spray</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!pug</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Shows PUG server's status</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!mm</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Opens a menu to set your MM rank</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!coin</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Opens a menu to choose your coin</td>
+                </tr>
+                <tr class="bg1">
+                        <td class="fNormal">!music</td>
+                        <td class="fNormal">=</td>
+                        <td class="fNormal">Opens a menu to choose a music kit</td>
                 </tr>
                 <tr class="bg1">
                         <td class="fNormal">!knife</td>

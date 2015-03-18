@@ -58,8 +58,14 @@ For support and installation notes visit http://www.hlxcommunity.com
 				(
 					'lastName',
 					'Player',
-					'width=30&flag=1&link=' . urlencode('mode=statsme&amp;player=%k')
+					'width=26&flag=1&link=' . urlencode('mode=statsme&amp;player=%k')
 				),
+				new TableColumn
+                                (
+                                        'mmrank',
+                                        'Rank',
+                                        'width=4&type=elorank'
+                                ),
 				new TableColumn
 				(
 					'skill',
@@ -204,6 +210,7 @@ For support and installation notes visit http://www.hlxcommunity.com
 			flag,
 			country,
 			skill,
+			mmrank,
 			kills,
 			deaths,
 			IFNULL(kills/deaths, '-') AS kpd,
