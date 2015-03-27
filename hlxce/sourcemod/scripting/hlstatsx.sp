@@ -1243,7 +1243,6 @@ public CreateHLstatsXMenuMain(&Handle: MenuHandle)
 	{
 		SetMenuTitle(MenuHandle, "HLstatsX - Main Menu");
 		AddMenuItem(MenuHandle, "", "Display Rank");
-		AddMenuItem(MenuHandle, "", "Set MM Rank");
 		AddMenuItem(MenuHandle, "", "Next Players");
 		AddMenuItem(MenuHandle, "", "Top10 Players");
 		AddMenuItem(MenuHandle, "", "Auto Ranking");
@@ -1254,7 +1253,6 @@ public CreateHLstatsXMenuMain(&Handle: MenuHandle)
 	{
 		SetMenuTitle(MenuHandle, "HLstatsX - Main Menu");
 		AddMenuItem(MenuHandle, "", "Display Rank");
-		AddMenuItem(MenuHandle, "", "Set MM Rank");
 		AddMenuItem(MenuHandle, "", "Next Players");
 		AddMenuItem(MenuHandle, "", "Top10 Players");
 		AddMenuItem(MenuHandle, "", "Clans Ranking");
