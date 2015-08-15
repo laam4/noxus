@@ -1214,16 +1214,6 @@ swap_player(player_index)
 				{
 					CS_SwitchTeam(player_index, CS_TEAM_CT);
 					CS_RespawnPlayer(player_index);
-					new weapon_entity = GetPlayerWeaponSlot(player_index, 4);
-					if (weapon_entity > 0)
-					{
-						decl String: class_name[32];
-						GetEdictClassname(weapon_entity, class_name, sizeof(class_name));
-						if (strcmp(class_name, "weapon_c4") == 0)
-						{
-							RemovePlayerItem(player_index, weapon_entity);
-						}
-					}
 				}
 				else
 				{
@@ -1516,7 +1506,7 @@ stock PbSayText(client, author = 0, bool:bWantsToChat = false, const String:szFo
 
 stock FixMotdCSGO(String:web[512])
 {
-	Format(web, sizeof(web), "http://noxus.lakuz.com/redirect.html?web=%s", web);
+	Format(web, sizeof(web), "http://noxus.lakuz.com/redirect.php?web=%s&fullsize=1", web);
 }
 
 /////////////////////////////////////////////////////////logege 
