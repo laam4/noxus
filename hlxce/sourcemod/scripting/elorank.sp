@@ -1,3 +1,4 @@
+By using this plugin you accept that your server token (GSLT) could be banned. I don't take any responsibility. Remove this line to compile
 #pragma semicolon 1
 
 #include <sourcemod>
