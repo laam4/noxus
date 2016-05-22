@@ -1,4 +1,3 @@
-By using this plugin you accept that your server token (GSLT) could be banned. I don't take any responsibility. Remove this line to compile
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -7,119 +6,18 @@ By using this plugin you accept that your server token (GSLT) could be banned. I
 #include <sdktools>
 #include <clientprefs>
 
-new bool:g_bIsCoin[MAXPLAYERS+1];
 new iRank[MAXPLAYERS+1] = {0,...};
-new iCoin[MAXPLAYERS+1] = {0,...};
-new Handle:g_cookieCoin = INVALID_HANDLE;
 
 public Plugin:myinfo = {
-	name = "[CS:GO] Competitive Rank",
+	name = "[CS:GO] !mm for hlstatsx",
 	author = "Laam4",
-	description = "Show your competitive rank on scoreboard",
-	version = "1.3",
+	description = "",
+	version = "1.0",
 	url = ""
 };
 
 public OnPluginStart() {
-	RegAdminCmd("sm_elorank", Command_SetElo,  ADMFLAG_GENERIC, "sm_elorank <#userid|name> <0-18>");
-	RegAdminCmd("sm_emblem", Command_SetCoin, ADMFLAG_GENERIC, "sm_elorank <#userid|name> <0-18>");
-	RegConsoleCmd("sm_coin", Command_CoinMenu);
 	RegConsoleCmd("sm_mm", Command_EloMenu);
-	HookEvent("announce_phase_end", Event_AnnouncePhaseEnd);
-	HookEvent("player_disconnect", Event_Disconnect, EventHookMode_Pre);
-	g_cookieCoin = RegClientCookie("iCoin", "", CookieAccess_Private);
-	for (new i = 1; i <= MaxClients; i++)
-	{
-		if (IsClientInGame(i) && !IsFakeClient(i) && AreClientCookiesCached(i))
-		{
-			OnClientCookiesCached(i);
-		}
-	}
-}
-
-public OnMapStart() {
-	new iIndex = FindEntityByClassname(MaxClients+1, "cs_player_manager");
-	if (iIndex == -1) {
-		SetFailState("Unable to find cs_player_manager entity");
-	}
-	SDKHook(iIndex, SDKHook_ThinkPost, Hook_OnThinkPost);
-}
-
-public OnClientCookiesCached(client)
-{
-	new String:valueCoin[16];
-	GetClientCookie(client, g_cookieCoin, valueCoin, sizeof(valueCoin));
-	if(strlen(valueCoin) > 0) {
-		iCoin[client] = StringToInt(valueCoin);
-		g_bIsCoin[client] = true;
-	}
-}
-
-public OnClientAuthorized(client, const String:auth[])
-{
-	new String:error[255];
-	new Handle:db = SQL_DefConnect(error, sizeof(error));
-	
-	if (db == INVALID_HANDLE)
-	{
-		PrintToServer("Could not connect: %s", error);
-	} else {
-		if(!IsFakeClient(client)) {
-			new String:get_rank[255];
-			new Handle:query;
-			decl String:buffer[3][32];
-			ExplodeString(auth, ":", buffer, 3, 32);
-			//PrintToServer("uniqueid: %s:%s", buffer[1], buffer[2]);
-			Format(get_rank, sizeof(get_rank), "SELECT hlstats_Players.mmrank FROM hlstats_PlayerUniqueIds LEFT JOIN hlstats_Players ON hlstats_Players.playerId = hlstats_PlayerUniqueIds.playerId WHERE uniqueId = '%s:%s'", buffer[1], buffer[2]);
-			query = SQL_Query(db, get_rank);
-			if(query == INVALID_HANDLE) {
-				SQL_GetError(db, error, sizeof(error));
-				PrintToServer("Failed to query (error: %s)", error);
-			} else if(SQL_FetchRow(query)) {
-				iRank[client] = SQL_FetchInt(query, 0);
-				//PrintToServer("rank: %d", rank[client]);
-				CloseHandle(query);
-			}
-		}
-		CloseHandle(db);
-	}
-}
-
-public Action:Event_Disconnect(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if(client)
-	{
-		iCoin[client] = 0;
-		iRank[client] = 0;
-		g_bIsCoin[client] = false;
-	}
-}
-
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
-{
-	if ((buttons & IN_SCORE) == IN_SCORE) {
-		new Handle:hBuffer = StartMessageOne("ServerRankRevealAll", client);
-		if (hBuffer == INVALID_HANDLE) {
-			PrintToChat(client, "INVALID_HANDLE");
-		}
-		else {
-			EndMessage();
-		}
-	}
-	return Plugin_Continue;
-}
-
-public Action:Event_AnnouncePhaseEnd(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new Handle:hBuffer = StartMessageAll("ServerRankRevealAll");
-	if (hBuffer == INVALID_HANDLE) {
-		PrintToServer("ServerRankRevealAll = INVALID_HANDLE");
-	}
-	else {
-		EndMessage();
-	}
-	return Plugin_Continue;
 }
 
 public Action:Command_EloMenu(client, args)
@@ -144,7 +42,7 @@ public Action:Command_EloMenu(client, args)
 		AddMenuItem(MenuHandle, "13", "Master Guardian Elite");
 		AddMenuItem(MenuHandle, "14", "Distinguished Master Guardian");
 		AddMenuItem(MenuHandle, "15", "Legendary Eagle");
-		AddMenuItem(MenuHandle, "16", "Legandary Eagle Master");
+		AddMenuItem(MenuHandle, "16", "Legendary Eagle Master");
 		AddMenuItem(MenuHandle, "17", "Supreme Master First Class");
 		AddMenuItem(MenuHandle, "18", "The Global Elite");
 
@@ -208,192 +106,4 @@ public EloHandler(Handle:menu, MenuAction:action, client, itemNum)
 			CloseHandle(menu);
 		}
 	}
-}
-
-public Action:Command_CoinMenu(client, args)
-{
-	if ( IsClientInGame(client) )
-	{
-		new Handle:MenuHandle = CreateMenu(CoinHandler);
-		SetMenuTitle(MenuHandle, "Set your coin");
-		AddMenuItem(MenuHandle, "0", "No Coin");
-		AddMenuItem(MenuHandle, "874", "Five Year Service Coin");
-		AddMenuItem(MenuHandle, "875", "DreamHack SteelSeries 2013 CS:GO Champion");
-		AddMenuItem(MenuHandle, "876", "DreamHack SteelSeries 2013 CS:GO Finalist");
-		AddMenuItem(MenuHandle, "877", "DreamHack SteelSeries 2013 CS:GO Semifinalist");
-		AddMenuItem(MenuHandle, "878", "DreamHack SteelSeries 2013 CS:GO Quarterfinalist");
-		AddMenuItem(MenuHandle, "879", "EMS One Katowice 2014 CS:GO Champion");
-		AddMenuItem(MenuHandle, "880", "EMS One Katowice 2014 CS:GO Finalist");
-		AddMenuItem(MenuHandle, "881", "EMS One Katowice 2014 CS:GO Semifinalist");
-		AddMenuItem(MenuHandle, "882", "EMS One Katowice 2014 CS:GO Quarterfinalist");
-		AddMenuItem(MenuHandle, "883", "ESL One Cologne 2014 CS:GO Champion");
-		AddMenuItem(MenuHandle, "884", "ESL One Cologne 2014 CS:GO Finalist");
-		AddMenuItem(MenuHandle, "885", "ESL One Cologne 2014 CS:GO Semifinalist");
-		AddMenuItem(MenuHandle, "886", "ESL One Cologne 2014 CS:GO Quarterfinalist");
-		AddMenuItem(MenuHandle, "887", "ESL One Cologne 2014 Pick 'Em Challenge Bronze");
-		AddMenuItem(MenuHandle, "888", "ESL One Cologne 2014 Pick 'Em Challenge Silver");
-		AddMenuItem(MenuHandle, "889", "ESL One Cologne 2014 Pick 'Em Challenge Gold");
-		AddMenuItem(MenuHandle, "890", "DreamHack Winter 2014 CS:GO Champion");
-		AddMenuItem(MenuHandle, "891", "DreamHack Winter 2014 CS:GO Finalist");
-		AddMenuItem(MenuHandle, "892", "DreamHack Winter 2014 CS:GO Semifinalist");
-		AddMenuItem(MenuHandle, "893", "DreamHack Winter 2014 CS:GO Quarterfinalist");
-		AddMenuItem(MenuHandle, "894", "DreamHack Winter 2014 Pick 'Em Challenge Bronze");
-		AddMenuItem(MenuHandle, "895", "DreamHack Winter 2014 Pick 'Em Challenge Silver");
-		AddMenuItem(MenuHandle, "896", "DreamHack Winter 2014 Pick 'Em Challenge Gold");
-		AddMenuItem(MenuHandle, "897", "ESL One Katowice 2015 CS:GO Champion");
-		AddMenuItem(MenuHandle, "898", "ESL One Katowice 2015 CS:GO Finalist");
-		AddMenuItem(MenuHandle, "899", "ESL One Katowice 2015 CS:GO Semifinalist");
-		AddMenuItem(MenuHandle, "900", "ESL One Katowice 2015 CS:GO Quarterfinalist");
-		AddMenuItem(MenuHandle, "901", "ESL One Katowice 2015 Pick 'Em Challenge Bronze");
-		AddMenuItem(MenuHandle, "902", "ESL One Katowice 2015 Pick 'Em Challenge Silver");
-		AddMenuItem(MenuHandle, "903", "ESL One Katowice 2015 Pick 'Em Challenge Gold");
-		AddMenuItem(MenuHandle, "1001", "Community Season One Spring 2013 Coin 1");
-		AddMenuItem(MenuHandle, "1002", "Community Season One Spring 2013 Coin 2");
-		AddMenuItem(MenuHandle, "1003", "Community Season One Spring 2013 Coin 3");
-		AddMenuItem(MenuHandle, "1013", "Community Season Two Autumn 2013 Coin 1");
-		AddMenuItem(MenuHandle, "1014", "Community Season Two Autumn 2013 Coin 2");
-		AddMenuItem(MenuHandle, "1015", "Community Season Two Autumn 2013 Coin 3");
-		AddMenuItem(MenuHandle, "1024", "Community Season Three Spring 2014 Coin 1");
-		AddMenuItem(MenuHandle, "1025", "Community Season Three Spring 2014 Coin 2");
-		AddMenuItem(MenuHandle, "1026", "Community Season Three Spring 2014 Coin 3");
-		AddMenuItem(MenuHandle, "1028", "Community Season Four Summer 2014 Coin 1");
-		AddMenuItem(MenuHandle, "1029", "Community Season Four Summer 2014 Coin 2");
-		AddMenuItem(MenuHandle, "1030", "Community Season Four Summer 2014 Coin 3");
-		AddMenuItem(MenuHandle, "1316", "Community Season Five Summer 2014 Coin 1");
-		AddMenuItem(MenuHandle, "1317", "Community Season Five Summer 2014 Coin 2");
-		AddMenuItem(MenuHandle, "1318", "Community Season Five Summer 2014 Coin 3");
-		AddMenuItem(MenuHandle, "6001", "Collectible Pin - Dust II");
-		AddMenuItem(MenuHandle, "6002", "Collectible Pin - Guardian Elite");
-		AddMenuItem(MenuHandle, "6003", "Collectible Pin - Mirage");
-		AddMenuItem(MenuHandle, "6004", "Collectible Pin - Inferno");
-		AddMenuItem(MenuHandle, "6005", "Collectible Pin - Italy");
-		AddMenuItem(MenuHandle, "6006", "Collectible Pin - Victory");
-		AddMenuItem(MenuHandle, "6007", "Collectible Pin - Militia");
-		AddMenuItem(MenuHandle, "6008", "Collectible Pin - Nuke");
-		AddMenuItem(MenuHandle, "6009", "Collectible Pin - Train");
-		AddMenuItem(MenuHandle, "6010", "Collectible Pin - Guardian");
-		AddMenuItem(MenuHandle, "6011", "Collectible Pin - Tactics");
-
-		SetMenuPagination(MenuHandle, 8);
-		DisplayMenu(MenuHandle, client, 30);
-	}
-	return Plugin_Handled;
-}
-
-public CoinHandler(Handle:menu, MenuAction:action, client, itemNum)
-{
-	switch(action)
-	{
-	case MenuAction_Select:
-		{
-			new String:info[6];
-			GetMenuItem(menu, itemNum, info, sizeof(info));
-			iCoin[client] = StringToInt(info);
-			SetClientCookie(client, g_cookieCoin, info);
-			g_bIsCoin[client] = true;
-			PrintToChat(client, "New coin selected");
-		}
-	case MenuAction_End:
-		{
-			CloseHandle(menu);
-		}
-	}
-}
-
-public Action:Command_SetElo(client, args) {
-	if (args < 2) {
-		ReplyToCommand(client, "[SM] Usage: sm_elorank <#userid|name> <0-18>");
-		return Plugin_Handled;
-	}
-	
-	decl String:szTarget[65];
-	GetCmdArg(1, szTarget, sizeof(szTarget));
-
-	decl String:szTargetName[MAX_TARGET_LENGTH+1];
-	decl iTargetList[MAXPLAYERS+1], iTargetCount, bool:bTnIsMl;
-
-	if ((iTargetCount = ProcessTargetString(
-					szTarget,
-					client,
-					iTargetList,
-					MAXPLAYERS,
-					COMMAND_FILTER_CONNECTED,
-					szTargetName,
-					sizeof(szTargetName),
-					bTnIsMl)) <= 0)
-	{
-		ReplyToTargetError(client, iTargetCount);
-		return Plugin_Handled;
-	}
-	
-	decl String:szRank[6];
-	GetCmdArg(2, szRank, sizeof(szRank));
-
-	new iRanks = StringToInt(szRank);
-	
-	for (new i = 0; i < iTargetCount; i++)
-	{
-		iRank[iTargetList[i]] = iRanks;
-	}
-	
-	return Plugin_Handled;
-}
-
-public Action:Command_SetCoin(client, args) {
-	if (args < 2) {
-		ReplyToCommand(client, "[SM] Usage: sm_coin <#userid|name> <coin>");
-		return Plugin_Handled;
-	}
-	
-	decl String:szTarget[65];
-	GetCmdArg(1, szTarget, sizeof(szTarget));
-
-	decl String:szTargetName[MAX_TARGET_LENGTH+1];
-	decl iTargetList[MAXPLAYERS+1], iTargetCount, bool:bTnIsMl;
-
-	if ((iTargetCount = ProcessTargetString(
-					szTarget,
-					client,
-					iTargetList,
-					MAXPLAYERS,
-					COMMAND_FILTER_CONNECTED,
-					szTargetName,
-					sizeof(szTargetName),
-					bTnIsMl)) <= 0)
-	{
-		ReplyToTargetError(client, iTargetCount);
-		return Plugin_Handled;
-	}
-	
-	decl String:szCoin[6];
-	GetCmdArg(2, szCoin, sizeof(szCoin));
-
-	new iCoins = StringToInt(szCoin);
-	
-	for (new i = 0; i < iTargetCount; i++)
-	{
-		iCoin[iTargetList[i]] = iCoins;
-		g_bIsCoin[iTargetList[i]] = true;
-	}
-	return Plugin_Handled;
-}
-
-public Hook_OnThinkPost(iEnt) {
-	static iRankOffset = -1;
-	static iCoinOffset = -1;
-	if (iRankOffset == -1) {
-		iRankOffset = FindSendPropInfo("CCSPlayerResource", "m_iCompetitiveRanking");
-	}
-	if (iCoinOffset == -1) {
-		iCoinOffset = FindSendPropInfo("CCSPlayerResource", "m_nActiveCoinRank");
-	}
-	SetEntDataArray(iEnt, iRankOffset, iRank, MAXPLAYERS+1, _, true);
-	static tempCoin[MAXPLAYERS+1];
-	GetEntDataArray(iEnt, iCoinOffset, tempCoin, MAXPLAYERS+1);
-	for (new i = 1; i <= MaxClients; i++) {
-		if (g_bIsCoin[i]) {
-			tempCoin[i] = iCoin[i];
-		}
-	}
-	SetEntDataArray(iEnt, iCoinOffset, tempCoin, MAXPLAYERS+1, _, true);
 }
