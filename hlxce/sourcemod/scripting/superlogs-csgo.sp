@@ -29,7 +29,7 @@
 
 #define MAX_LOG_WEAPONS 41
 #define IGNORE_SHOTS_START 35
-#define MAX_WEAPON_LEN 17
+#define MAX_WEAPON_LEN 40
 
 
 new g_weapon_stats[MAXPLAYERS+1][MAX_LOG_WEAPONS][15];
@@ -207,6 +207,7 @@ public Event_PlayerShoot(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		decl String: weapon[MAX_WEAPON_LEN];
 		GetEventString(event, "weapon", weapon, sizeof(weapon));
+		ReplaceString(weapon, sizeof(weapon), "weapon_", "", false);
 		new weapon_index = get_weapon_index(weapon);
 		if (weapon_index > -1 && weapon_index < IGNORE_SHOTS_START)
 		{
