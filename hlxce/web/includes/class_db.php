@@ -89,6 +89,8 @@ class DB_mysql
 		
 		if ( $this->link )
 		{
+			$q = @mysql_query("SET SESSION sql_mode=''; ");
+			@mysql_free_result($q);
 			$q = @mysql_query("SET NAMES 'utf8'", $this->link);
 			@mysql_free_result($q);
 			if ( $db_name != '' )
