@@ -42,16 +42,16 @@ if ( !defined('IN_HLSTATS') ) { die('Do not access this file directly'); }
 //           (You might also try setting this to e.g. ":/tmp/mysql.sock" to
 //           use a Unix domain socket, if your mysqld is on the same box as
 //           your web server.)
-define("DB_ADDR", "localhost");
+define("DB_ADDR", "mysql");
 
 // DB_USER - The username to connect to the database as
-define("DB_USER", "");
+define("DB_USER", $_ENV['MYSQL_USER']);
 
 // DB_PASS - The password for DB_USER
-define("DB_PASS", "");
+define("DB_PASS", $_ENV['MYSQL_PASSWORD']);
 
 // DB_NAME - The name of the database
-define("DB_NAME", "");
+define("DB_NAME", $_ENV['MYSQL_DATABASE']);
 
 // DB_TYPE - The database server type. Only "mysql" is supported currently
 define("DB_TYPE", "mysql");
