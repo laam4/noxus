@@ -1,0 +1,8 @@
+[PHP]
+date.timezone = Europe/London
+error_log = /proc/self/fd/2
+display_errors = On
+display_startup_errors = On
+log_errors = On
+log_errors_max_len = 1024
+
