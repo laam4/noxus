@@ -2746,7 +2746,7 @@ while ($loop = &getLine()) {
 					);
 				}
 			}
-		} elsif ($s_output =~ /^(.+?(?:<.+?>)*?)" triggered "clantag" \(value "(.+?)?"\)$/) {
+		} elsif ($s_output =~ /^"(.+?(?:<.+?>)*?)" triggered "clantag" \(value "(.+?)?"\)$/) {
 			# L 08/14/2014 - 18:04:21: "Laam4<7><STEAM_1:0:106564><Unassigned>" triggered "clantag" (value "Kunіngas")
 			$ev_player = $1;
 			$ev_clantag = $2;
