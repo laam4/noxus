@@ -1075,7 +1075,7 @@ sub doEvent_Frag
 				if ($weapon eq "broom") {
 					$weapon = "crowbar";
 				}
-			} elsif (index($weapon, "knife_") != -1) {
+			} elsif (index($weapon, "knife_") != -1 or $weapon eq "bayonet") {
 					$weapon = "knife";
 			} elsif ($g_servers{$s_addr}->{play_game} == FF()) {
 				if ($weapon eq "BOOM_HEADSHOT") {
