@@ -20,20 +20,22 @@
  */
 
 #pragma semicolon 1
+#pragma newdecls required
  
 #include <sourcemod>
 #include <sdktools>
+#include <csgo_items>
 
 #define NAME "SuperLogs: CS:GO"
-#define VERSION "1.2.6"
+#define VERSION "1.3.0"
 
 #define MAX_LOG_WEAPONS 41
 #define IGNORE_SHOTS_START 35
-#define MAX_WEAPON_LEN 40
+#define MAX_WEAPON_LEN 32
 
 
-new g_weapon_stats[MAXPLAYERS+1][MAX_LOG_WEAPONS][15];
-new const String:g_weapon_list[MAX_LOG_WEAPONS][MAX_WEAPON_LEN] = {
+int g_weapon_stats[MAXPLAYERS+1][MAX_LOG_WEAPONS][15];
+char g_weapon_list[MAX_LOG_WEAPONS][MAX_WEAPON_LEN] = {
 									"ak47", 
 									"aug",
 									"awp", 
@@ -77,33 +79,32 @@ new const String:g_weapon_list[MAX_LOG_WEAPONS][MAX_WEAPON_LEN] = {
 									"decoy" 
 								};
 
-new Handle:g_cvar_wstats = INVALID_HANDLE;
-new Handle:g_cvar_headshots = INVALID_HANDLE;
-new Handle:g_cvar_actions = INVALID_HANDLE;
-new Handle:g_cvar_locations = INVALID_HANDLE;
-new Handle:g_cvar_ktraj = INVALID_HANDLE;
-new Handle:g_cvar_version = INVALID_HANDLE;
-new EngineVersion:CurrentVersion;
+Handle g_cvar_wstats = INVALID_HANDLE;
+Handle g_cvar_headshots = INVALID_HANDLE;
+Handle g_cvar_actions = INVALID_HANDLE;
+Handle g_cvar_locations = INVALID_HANDLE;
+Handle g_cvar_ktraj = INVALID_HANDLE;
+Handle g_cvar_version = INVALID_HANDLE;
+EngineVersion CurrentVersion;
 
-new bool:g_logwstats = true;
-new bool:g_logheadshots = true;
-new bool:g_logactions = true;
-new bool:g_loglocations = true;
-new bool:g_logktraj = false;
+bool g_logwstats = true;
+bool g_logheadshots = true;
+bool g_logactions = true;
+bool g_loglocations = true;
+bool g_logktraj = false;
 
 #include <loghelper>
 #include <wstatshelper>
 
-
-public Plugin:myinfo = {
+public Plugin myinfo = {
 	name = NAME,
 	author = "psychonic",
-	description = "Advanced logging for CS:GO. Generates auxilary logging for use with log parsers such as HLstatsX and Psychostats",
+	description = "Advanced logging for CS:GO. Generates auxiliary logging for use with log parsers such as HLstatsX and Psychostats",
 	version = VERSION,
 	url = "http://www.hlxcommunity.com"
 };
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	CurrentVersion = GetEngineVersion();
 	if (CurrentVersion != Engine_CSGO)
@@ -115,7 +116,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 }
 
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	CreatePopulateWeaponTrie();
 	
@@ -138,7 +139,7 @@ public OnPluginStart()
 	HookConVarChange(g_cvar_locations, OnCvarLocationsChange);
 	HookConVarChange(g_cvar_ktraj, OnCvarKtrajChange);
 	
-	g_cvar_version = CreateConVar("superlogs_css_version", VERSION, NAME, FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	g_cvar_version = CreateConVar("superlogs_csgo_version", VERSION, NAME, FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 		
 	hook_wstats();
 	hook_actions();
@@ -151,19 +152,19 @@ public OnPluginStart()
 }
 
 
-public OnMapStart()
+public void OnMapStart()
 {
 	GetTeams();
 }
 
-public OnConfigsExecuted()
+public void OnConfigsExecuted()
 {
-	decl String:version[255];
+	char version[255];
 	GetConVarString(g_cvar_version, version, sizeof(version));
 	SetConVarString(g_cvar_version, version);
 }
 
-hook_wstats()
+void hook_wstats()
 {
 	HookEvent("weapon_fire", Event_PlayerShoot);
 	HookEvent("player_hurt", Event_PlayerHurt);
@@ -172,7 +173,7 @@ hook_wstats()
 	HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 }
 
-unhook_wstats()
+void unhook_wstats()
 {
 	UnhookEvent("weapon_fire", Event_PlayerShoot);
 	UnhookEvent("player_hurt", Event_PlayerHurt);
@@ -181,34 +182,86 @@ unhook_wstats()
 	UnhookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 }
 
-hook_actions()
+void hook_actions()
 {
 	HookEvent("round_mvp", Event_RoundMVP);
 }
 
-unhook_actions()
+void unhook_actions()
 {
 	UnhookEvent("round_mvp", Event_RoundMVP);
 }
 
-public OnClientPutInServer(client)
+public void OnClientPutInServer(int client)
 {
 	reset_player_stats(client);
 }
 
-
-public Event_PlayerShoot(Handle:event, const String:name[], bool:dontBroadcast)
+stock char get_ItemDef(int client)
+{
+	char real_weapon[MAX_WEAPON_LEN];
+	int active = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+	if (active == -1) 
+	{
+		real_weapon = "world";
+		return real_weapon;
+	}
+	int itemdef = GetEntProp(active, Prop_Send, "m_iItemDefinitionIndex");
+	switch(itemdef)
+	{
+		case 60: // weapon_m4a1_silencer
+		{
+			if (GetEntProp(active, Prop_Send, "m_bSilencerOn") == 0)
+			{
+				real_weapon = "m4a1_silencer_off";
+			} 
+			else if (GetEntProp(active, Prop_Send, "m_bSilencerOn") == 1)
+			{
+				real_weapon = "m4a1_silencer";
+			}
+		}
+		case 61: // weapon_usp_silencer
+		{
+			if (GetEntProp(active, Prop_Send, "m_bSilencerOn") == 0)
+			{
+				real_weapon = "usp_silencer_off"; 
+			} 
+			else if (GetEntProp(active, Prop_Send, "m_bSilencerOn") == 1)
+			{
+				real_weapon = "usp_silencer";
+			}
+		}
+		case 42, 59, 500, 505, 506, 507, 508, 509, 512, 514, 515, 516:
+		{
+			real_weapon = "knife";
+			//TODO: add all different knives to stats? needs graphics etc.
+		}
+		default:
+		{
+			CSGO_GetItemDefinitionNameByIndex(itemdef, real_weapon, sizeof(real_weapon));
+			ReplaceString(real_weapon, sizeof(real_weapon), "weapon_", "", false);
+		}
+	}	
+	return real_weapon;
+}
+public void Event_PlayerShoot(Handle event, const char[] name, bool dontBroadcast)
 {
 	// "userid"        "short"
 	// "weapon"        "string"        // weapon name used
 
-	new attacker   = GetClientOfUserId(GetEventInt(event, "userid"));
+	int attacker   = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (attacker > 0)
 	{
-		decl String: weapon[MAX_WEAPON_LEN];
-		GetEventString(event, "weapon", weapon, sizeof(weapon));
-		ReplaceString(weapon, sizeof(weapon), "weapon_", "", false);
-		new weapon_index = get_weapon_index(weapon);
+		//char weapon[MAX_WEAPON_LEN];
+		//GetEventString(event, "weapon", weapon, sizeof(weapon));
+		//ReplaceString(weapon, sizeof(weapon), "weapon_", "", false);
+		
+		char real_weapon[MAX_WEAPON_LEN];
+		real_weapon = get_ItemDef(attacker);
+		
+		int weapon_index = get_weapon_index(real_weapon);
+				
+		//PrintToServer("SHOOT old_weapon: %s real_weapon: %s", weapon, real_weapon);
 		if (weapon_index > -1 && weapon_index < IGNORE_SHOTS_START)
 		{
 			g_weapon_stats[attacker][weapon_index][LOG_HIT_SHOTS]++;
@@ -217,7 +270,7 @@ public Event_PlayerShoot(Handle:event, const String:name[], bool:dontBroadcast)
 }
 
 
-public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_PlayerHurt(Handle event, const char[] name, bool dontBroadcast)
 {
 	//	"userid"        "short"         // player index who was hurt
 	//	"attacker"      "short"         // player index who attacked
@@ -228,17 +281,23 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 	//	"dmg_armor"     "byte"          // damage done to armor
 	//	"hitgroup"      "byte"          // hitgroup that was damaged
 
-	new attacker  = GetClientOfUserId(GetEventInt(event, "attacker"));
+	int attacker  = GetClientOfUserId(GetEventInt(event, "attacker"));
 	
 	if (attacker > 0) {
-		decl String: weapon[MAX_WEAPON_LEN];
-		GetEventString(event, "weapon", weapon, sizeof(weapon));
-		new weapon_index = get_weapon_index(weapon);
+		//char weapon[MAX_WEAPON_LEN];
+		//GetEventString(event, "weapon", weapon, sizeof(weapon));
+		
+		char real_weapon[MAX_WEAPON_LEN];
+		real_weapon = get_ItemDef(attacker);		
+		
+		int weapon_index = get_weapon_index(real_weapon);
+		
+		//PrintToServer("HURT old_weapon: %s real_weapon: %s", weapon, real_weapon);
 		if (weapon_index > -1)
 		{
 			g_weapon_stats[attacker][weapon_index][LOG_HIT_HITS]++;
 			g_weapon_stats[attacker][weapon_index][LOG_HIT_DAMAGE] += GetEventInt(event, "dmg_health");
-			new hitgroup  = GetEventInt(event, "hitgroup");
+			int hitgroup  = GetEventInt(event, "hitgroup");
 			if (hitgroup < 8)
 			{
 				g_weapon_stats[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
@@ -248,14 +307,14 @@ public Event_PlayerHurt(Handle:event, const String:name[], bool:dontBroadcast)
 }
 
 
-public Action:Event_PlayerDeathPre(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Event_PlayerDeathPre(Handle event, const char[] name, bool dontBroadcast)
 {
 	// "userid"        "short"         // user ID who died                             
 	// "attacker"      "short"         // user ID who killed
 	// "weapon"        "string"        // weapon name killer used 
 	// "headshot"      "bool"          // signals a headshot
 	
-	new attacker = GetEventInt(event, "attacker");
+	int attacker = GetEventInt(event, "attacker");
 	if (g_loglocations)
 	{
 		LogKillLoc(GetClientOfUserId(attacker), GetClientOfUserId(GetEventInt(event, "userid")));
@@ -269,7 +328,7 @@ public Action:Event_PlayerDeathPre(Handle:event, const String:name[], bool:dontB
 	return Plugin_Continue;
 }
 
-public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_PlayerDeath(Handle event, const char[] name, bool dontBroadcast)
 {
 	// this extents the original player_death by a new fields
 	// "userid"        "short"         // user ID who died                             
@@ -279,10 +338,15 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	// "dominated"    "short"        // did killer dominate victim with this kill
 	// "revenge"    "short"        // did killer get revenge on victim with this kill
 	
-	new victim   = GetClientOfUserId(GetEventInt(event, "userid"));
-	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	decl String: weapon[MAX_WEAPON_LEN];
-	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	int victim   = GetClientOfUserId(GetEventInt(event, "userid"));
+	int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+	//char weapon[MAX_WEAPON_LEN];
+	//GetEventString(event, "weapon", weapon, sizeof(weapon));
+	
+	char real_weapon[MAX_WEAPON_LEN];
+	real_weapon = get_ItemDef(attacker);
+	
+	//PrintToServer("DEATH old_weapon: %s real_weapon: %s", weapon, real_weapon);
 	
 	if (attacker <= 0 || victim <= 0)
 	{
@@ -291,7 +355,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	if (g_logwstats)
 	{
-		new weapon_index = get_weapon_index(weapon);
+		int weapon_index = get_weapon_index(real_weapon);		
 		if (weapon_index > -1)
 		{
 			g_weapon_stats[attacker][weapon_index][LOG_HIT_KILLS]++;
@@ -309,7 +373,7 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 	if (g_logktraj)
 	{
-		LogPSKillTraj(attacker, victim, weapon);
+		LogPSKillTraj(attacker, victim, real_weapon);
 	}
 	if (g_logactions)
 	{
@@ -325,45 +389,45 @@ public Event_PlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	}
 }
 
-public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 {
 	// "userid"        "short"         // user ID on server          
 
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0)
 	{
 		reset_player_stats(client);
 	}
 }
 
-public Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast)
 {
 	WstatsDumpAll();
 }
 
-public Event_RoundMVP(Handle:event, const String:name[], bool:dontBroadcast)
+public void Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast)
 {
 	LogPlayerEvent(GetClientOfUserId(GetEventInt(event, "userid")), "triggered", "round_mvp");
 }
 
-public Action:Event_PlayerDisconnect(Handle:event, const String:name[], bool:dontBroadcast)
+public Action Event_PlayerDisconnect(Handle event, const char[] name, bool dontBroadcast)
 {
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	OnPlayerDisconnect(client);
 	return Plugin_Continue;
 }
 
 
-public Action:LogMap(Handle:timer)
+public Action LogMap(Handle timer)
 {
 	// Called 1 second after OnPluginStart since srcds does not log the first map loaded. Idea from Stormtrooper's "mapfix.sp" for psychostats
 	LogMapLoad();
 }
 
 
-public OnCvarWstatsChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+public void OnCvarWstatsChange(Handle cvar, const char[] oldVal, const char[] newVal)
 {
-	new bool:old_value = g_logwstats;
+	bool old_value = g_logwstats;
 	g_logwstats = GetConVarBool(g_cvar_wstats);
 	
 	if (old_value != g_logwstats)
@@ -387,9 +451,9 @@ public OnCvarWstatsChange(Handle:cvar, const String:oldVal[], const String:newVa
 	}
 }
 
-public OnCvarActionsChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+public void OnCvarActionsChange(Handle cvar, const char[] oldVal, const char[] newVal)
 {
-	new bool:old_value = g_logactions;
+	bool old_value = g_logactions;
 	g_logactions = GetConVarBool(g_cvar_actions);
 	
 	if (old_value != g_logactions)
@@ -413,9 +477,9 @@ public OnCvarActionsChange(Handle:cvar, const String:oldVal[], const String:newV
 	}
 }
 
-public OnCvarHeadshotsChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+public void OnCvarHeadshotsChange(Handle cvar, const char[] oldVal, const char[] newVal)
 {
-	new bool:old_value = g_logheadshots;
+	bool old_value = g_logheadshots;
 	g_logheadshots = GetConVarBool(g_cvar_headshots);
 	
 	if (old_value != g_logheadshots)
@@ -431,9 +495,9 @@ public OnCvarHeadshotsChange(Handle:cvar, const String:oldVal[], const String:ne
 	}
 }
 
-public OnCvarLocationsChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+public void OnCvarLocationsChange(Handle cvar, const char[] oldVal, const char[] newVal)
 {
-	new bool:old_value = g_loglocations;
+	bool old_value = g_loglocations;
 	g_loglocations = GetConVarBool(g_cvar_locations);
 	
 	if (old_value != g_loglocations)
@@ -449,9 +513,9 @@ public OnCvarLocationsChange(Handle:cvar, const String:oldVal[], const String:ne
 	}
 }
 
-public OnCvarKtrajChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+public void OnCvarKtrajChange(Handle cvar, const char[] oldVal, const char[] newVal)
 {
-	new bool:old_value = g_logktraj;
+	bool old_value = g_logktraj;
 	g_logktraj = GetConVarBool(g_cvar_ktraj);
 	
 	if (old_value != g_logktraj)
