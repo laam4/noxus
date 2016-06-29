@@ -200,6 +200,11 @@ public void OnClientPutInServer(int client)
 stock char get_ItemDef(int client)
 {
 	char real_weapon[MAX_WEAPON_LEN];
+	if (client < 1)
+	{
+		real_weapon = "world";
+		return real_weapon;
+	}
 	int active = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 	if (active == -1) 
 	{
