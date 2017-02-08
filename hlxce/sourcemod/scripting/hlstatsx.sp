@@ -1506,7 +1506,7 @@ stock PbSayText(client, author = 0, bool:bWantsToChat = false, const String:szFo
 
 stock FixMotdCSGO(String:web[512])
 {
-	Format(web, sizeof(web), "http://noxus.lakuz.com/redirect.php?web=%s&fullsize=1", web);
+	Format(web, sizeof(web), "javascript: var x = screen.width * 0.90;var y = screen.height * 0.90;window.open(\"%s\", \"Really boomix, JS?\",\"scrollbars=yes, width='+x+',height='+y+'\");", web);
 }
 
 /////////////////////////////////////////////////////////logege 
