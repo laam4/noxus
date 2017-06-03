@@ -1,0 +1,1 @@
+15 04 * * * root cd /noxus/hlxce/scripts/ && ./hlstats-awards.pl >> /var/log/cron.log 2>&1
